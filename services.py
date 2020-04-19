@@ -8,9 +8,13 @@
 
 #!flask/bin/python
 
-from flask import Flask, jsonify, abort, make_response
+from flask import Flask, jsonify, abort, make_response, request
 from flask_httpauth import HTTPBasicAuth
+import os
 import sys
+import ServicesKeys
+import requests
+
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
@@ -33,8 +37,8 @@ tasks = [
 #################################### AUTHENTICATION ###########################################
 @auth.get_password
 def get_password(username):
-    if username == 'Dhairya':
-        return 'python'
+    if username == 'admin':
+        return 'secret'
     return None
 
 @auth.error_handler
@@ -43,6 +47,23 @@ def unauthorized():
 
 ##############################################################################################
 
+
+@app.route('/Canvas', methods=['GET'])
+@auth.login_required
+def getCanvasInfo():
+
+    # Get file URL
+    file_name = request.args.get("file") 
+    url = "https://vt.instructure.com/api/v1/courses/%s/files/?search_term=%s&access_token=%s" % ("104692", file_name, ServicesKeys.token)
+    r = requests.get(url)  
+    
+    # Download file
+    file_info = r.json()[0]
+    download = requests.get(file_info["url"])
+    open(file_info["filename"], 'wb').write(download.content)
+    
+    return r.text
+    
 @app.route('/todo/api/v1.0/tasks', methods=['GET'])
 @auth.login_required
 def get_tasks():
