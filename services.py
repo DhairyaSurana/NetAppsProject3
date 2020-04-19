@@ -63,6 +63,19 @@ def getCanvasInfo():
     open(file_info["filename"], 'wb').write(download.content)
     
     return r.text
+
+@app.route('/Marvel', methods=['GET'])
+@auth.login_required
+def getMarvelInfo():
+
+    # Get file URL
+    story_name = request.args.get("story") 
+    url = "http://gateway.marvel.com/v1/public/stories/%s?apikey=%s&hash=%s&ts=%s" % (story_name, ServicesKeys.apikey, ServicesKeys.hash, ServicesKeys.ts)
+    r = requests.get(url)  
+    
+    open("Marvel.txt", 'wb').write(r.content) # Download file
+    
+    return r.text
     
 @app.route('/todo/api/v1.0/tasks', methods=['GET'])
 @auth.login_required
