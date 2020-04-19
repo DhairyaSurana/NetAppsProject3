@@ -2,7 +2,7 @@
 
 ##################### INITIALIZATION ######################
 
-# python3 services.py 
+# python3 services.py -p <WEBSERVER PORT>
 
 ###########################################################
 
@@ -10,6 +10,7 @@
 
 from flask import Flask, jsonify, abort, make_response
 from flask_httpauth import HTTPBasicAuth
+import sys
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
@@ -59,4 +60,12 @@ def not_found(error):
     return make_response(jsonify({'error': 'Not found'}), 404)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+
+    if(len(sys.argv) == 3 and sys.argv[1] == "-p"):
+
+        try:
+            app.run(port=sys.argv[2])
+        except Exception as e:
+            print(e)
+    else:
+        print("    Error: Incorrect args.\n    The format should be \"python3 services.py -p <WEBSERVER PORT>\"")
