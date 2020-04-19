@@ -43,7 +43,7 @@ def get_password(username):
 
 @auth.error_handler
 def unauthorized():
-    return make_response(jsonify({'error': 'Unauthorized access'}), 401)
+    return make_response("  Could not verify your access level for that URL. \n  You have to login with the proper credentials.", 401)
 
 ##############################################################################################
 
@@ -76,7 +76,14 @@ def getMarvelInfo():
     open("Marvel.txt", 'wb').write(r.content) # Download file
     
     return r.text
+
+@app.route('/goodbye', methods=['GET'])
+@auth.login_required
+def goodbye():
     
+    return "Goodbye World"
+
+
 @app.route('/todo/api/v1.0/tasks', methods=['GET'])
 @auth.login_required
 def get_tasks():
